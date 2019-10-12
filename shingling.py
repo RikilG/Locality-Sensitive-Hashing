@@ -52,7 +52,8 @@ def build_matrix(files, k=4, newline=False):
 def main():
     files = list_files("corpus")
     incidence_matrix = build_matrix(files, k=8)
-    print(incidence_matrix)
+    # print(incidence_matrix)
+    return incidence_matrix
 
 if __name__ == "__main__":
     main()
