@@ -11,14 +11,16 @@ import codecs
 import os
 
 
-def list_files(folderpath):
-    """
-    Reads and builds corpus files list from given folderpath
+def list_files(folderpath, extension=".txt"):
+    """Reads and builds corpus files list from given folderpath
 
     Parameters
     ----------
     folderpath: str
         The path to target folder where corpus files exist
+    extension: str, optional
+        File extension of files to be read. Default: .txt
+        set to None to read all files
     
     Returns
     -------
@@ -26,7 +28,7 @@ def list_files(folderpath):
         a list of files present in the directory(includes sub-folders)
     """
 
-    print("Reading corpus")
+    print(f"Reading corpus: {folderpath}")
     # check if folder path exists
     if(not os.path.exists(folderpath)):
         raise Exception(f"Given folder path: {folderpath} does not exist")
@@ -34,10 +36,13 @@ def list_files(folderpath):
     
     doc_files = []
     i = 0           # index/id for each file
+
+    if extension == None:
+        extension = ""
     
     for (root, dirs, files) in os.walk(folderpath):
         for f in files:
-            if f.endswith(".txt"):
+            if f.endswith(extension):
                 doc_files.append( (os.path.join(root, f), i) )
                 i += 1
     
@@ -45,8 +50,7 @@ def list_files(folderpath):
 
 
 def build_matrix(files, k=4, newline=False):
-    """
-    helper-function: build incidence matrix for k-grams (shingles)
+    """helper-function: build incidence matrix for k-grams (shingles)
     """
 
     df = DataFrame()
@@ -56,6 +60,7 @@ def build_matrix(files, k=4, newline=False):
             str = doc.read()
             df[ f[1] ] = 0
             # print(df)
+            str = str.replace('\r', '')
             if newline is False:
                 str = str.replace('\n',' ')
             for i in range(0, len(str)-k+1):
@@ -68,24 +73,26 @@ def build_matrix(files, k=4, newline=False):
     return df
 
 
-def get_shingle_matrix(folderpath, shingle_size=8):
-    """
-    Performs shingling and builds incidence index for shingles
+def get_shingle_matrix(folderpath, shingle_size=8, extension=".txt"):
+    """Performs shingling and builds incidence index for shingles
 
     Parameters
     ----------
     folderpath: str
         The path to target folder where corpus files exist
-    shingle_size: int
-        Size of shingles to divide the documents into
+    shingle_size: int, optional
+        Size of shingles to divide the documents into. Default: 8
+    extension: str, optional
+        File extension of files to be read. Default: .txt
+        set to None to read all files
     
     Returns
     -------
-    Dataframe
-        pandas dataframe containing rows as shingles and cols as doc_ids
+    pandas.Dataframe
+        dataframe containing rows as shingles and cols as doc_ids
     """
 
-    files = list_files(folderpath)
+    files = list_files(folderpath, extension)
     incidence_matrix = build_matrix(files, k=shingle_size)
     return incidence_matrix
 
