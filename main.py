@@ -19,6 +19,7 @@ NOTE: if pickle(binary) files exist for each operation, they will be used
 import time
 import shingling
 import minhashing
+import lsh
 
 print("\n*** Plagiarism detection using LSH ***\n")
 
@@ -36,12 +37,10 @@ no_of_hash_functions = 200  # specify no of hash functions for signature matrix
 signature_matrix = minhashing.generate_signature_matrix(shingle_matrix, no_of_hash_functions)
 print(f"Time taken for minhashing: {time.time()-timer_start}")
 
-# print to debug
-# print(shingle_matrix)
-# print(shingle_matrix.shape)
-# print(signature_matrix)
-# print(signature_matrix.shape)
-
 # step 3: LSH(Locality sensitive hashing)
+start_time = time.time()    # start timer
+buckets_list = lsh.lsh(signature_matrix, 1)
+print(buckets_list)
+print(f"Time taken for lsh: {time.time()-timer_start}")
 
 print("\n*** End of Program ***\n")
