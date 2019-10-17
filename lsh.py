@@ -1,6 +1,3 @@
-from minhashing import minhash
-from shingling import main
-
 def band_hashing(band, hash_f, buckets):
     '''
     This function takes a band as input,
@@ -8,13 +5,13 @@ def band_hashing(band, hash_f, buckets):
     at its respective postition.
     '''
     for col in band.columns:
-        h = hash_f(str(band[col].values))
+        h = hash_f(tuple(band[col].values))
         if h in buckets: 
             buckets[h].append(col)
         else: 
             buckets[h] = [col]
 
-def lsh(sign_mat, r, hash_f):
+def lsh(sign_mat, r, hash_f=None):
     '''
     This function uses band_hashing function 
     to hash each band to a bucket in the buckets_list.
@@ -30,12 +27,17 @@ def lsh(sign_mat, r, hash_f):
     b = n//r
     buckets_list = [dict() for i in range(b)]
 
+    if hash_f==None:
+        hash_f = hash
+
     for i in range(0, n-r+1, r):
         band = sign_mat.loc[i:i+r-1,:]
-        band_hashing(band, hash, buckets_list[int(i/r)])
+        band_hashing(band, hash_f, buckets_list[int(i/r)])
 
-    print(buckets_list)
+    return buckets_list
 
 if __name__=='__main__':
+    from minhashing import minhash
+    from shingling import main
     data = main()
     sign_mat = minhash(data)
