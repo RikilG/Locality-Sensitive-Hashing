@@ -1,6 +1,7 @@
 """
 Hash similar documents to same buckets to identify similar documents
 """
+
 def band_hashing(band, hash_f, buckets_dict):
     """helper-function: To Perform hash on bands
 
@@ -15,6 +16,7 @@ def band_hashing(band, hash_f, buckets_dict):
             buckets_dict[h].append(col)
         else: 
             buckets_dict[h] = [col]
+
 
 def get_bucket_list(sign_mat, r, hash_f=None):
     """This function returns the list of buckets with similar documents
@@ -54,6 +56,7 @@ def get_bucket_list(sign_mat, r, hash_f=None):
 
     return buckets_list
 
+
 def query_band_hashing(band, hash_f):
     """helper-function: To Perform hash on query doc bands
 
@@ -69,7 +72,7 @@ def query_band_hashing(band, hash_f):
     return hash_list
 
 
-def find_similar_docs(doc_id, file_list, buckets_list, sign_mat, r, hash_f=None):
+def find_similar_docs(doc_id, buckets_list, sign_mat, r, hash_f=None):
     """This function finds similar documents
 
     Parameters
@@ -81,6 +84,8 @@ def find_similar_docs(doc_id, file_list, buckets_list, sign_mat, r, hash_f=None)
     
     Returns
     -------
+    set
+        set containing similar documents to given document
     """
     
     # b: number of bands
@@ -98,11 +103,12 @@ def find_similar_docs(doc_id, file_list, buckets_list, sign_mat, r, hash_f=None)
         band = sign_mat.loc[i:i+r-1, int(doc_id)]
         query_bucket_list.append(query_band_hashing(band, hash_f))
     
+    similar_docs = set()
     for i in range(len(query_bucket_list)):
         for j in range(len(query_bucket_list[i])):
-            print(buckets_list[i][query_bucket_list[i][j]])
+            similar_docs.update(set(buckets_list[i][query_bucket_list[i][j]]))
 
-    return buckets_list
+    return similar_docs
 
 
 if __name__=='__main__':

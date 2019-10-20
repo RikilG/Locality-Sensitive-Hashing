@@ -20,6 +20,7 @@ import time, os
 import shingling
 import minhashing
 import lsh
+import statistics
 
 def startLSH():
     print("\n*** Plagiarism detection using LSH ***\n")
@@ -41,20 +42,29 @@ def startLSH():
 
     # step 3: LSH(Locality sensitive hashing)
     start_time = time.time()    # start timer
-    r = 3
+    r = 2
     buckets_list = lsh.get_bucket_list(signature_matrix, r)
-    print(buckets_list)
     print(f"Time taken for lsh: {time.time()-start_time}")
 
     # preprocessing done. ask file from user to check plagiarism
+    sim_type = "jaccard"
     while True:
-        test_file = input("Enter path of file: ")
+        test_file = int(input("Enter path of file: "))
+        threshold = float(input("Enter threshold: "))
         if test_file == "EXIT":
             break;
         # if not os.path.exists(test_file):
         #     print(">> The given path does not exist.")
         #     continue
-        lsh.find_similar_docs(test_file, None, buckets_list, signature_matrix, r)
+        print(f"Given file: {statistics.get_file_name(test_file, files)}")
+        similar_docs = lsh.find_similar_docs(test_file, buckets_list, signature_matrix, r)
+        output = statistics.compute_similarity(test_file, similar_docs, signature_matrix, sim_type)
+
+        for file_id, score in output:
+            print(f"{statistics.get_file_name(file_id, files)}\t{score}")
+        
+        print(f"Precision: {statistics.precision(threshold, output)}")
+        print(f"Recall: {statistics.recall(threshold, test_file, len(files), output, signature_matrix, sim_type)}")
 
     print("\n*** End of Program ***\n")
 
