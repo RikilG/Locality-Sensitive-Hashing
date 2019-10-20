@@ -16,7 +16,7 @@ NOTE: if pickle(binary) files exist for each operation, they will be used
     to start afresh.
 """
 
-import time
+import time, os
 import shingling
 import minhashing
 import lsh
@@ -27,20 +27,30 @@ print("\n*** Plagiarism detection using LSH ***\n")
 timer_start = time.time()   # start timer
 folderpath = "corpus"       # path to corpus
 extension=".txt"            # specified extensions to read. Set to None to ignore extension
-shingle_size = 8            # size of shingle: 8-12 is reommended
-shingle_matrix = shingling.get_shingle_matrix(folderpath, 8, extension)
+shingle_size = 6            # size of shingle: 8-12 is reommended
+shingle_matrix = shingling.get_shingle_matrix(folderpath, shingle_size, extension)
+print(shingle_matrix.shape)
 print(f"Time taken for shingling: {time.time()-timer_start}")
 
 # step 2: min-hashing
 start_time = time.time()    # start timer
-no_of_hash_functions = 200  # specify no of hash functions for signature matrix
+no_of_hash_functions = 50   # specify no of hash functions for signature matrix
 signature_matrix = minhashing.generate_signature_matrix(shingle_matrix, no_of_hash_functions)
-print(f"Time taken for minhashing: {time.time()-timer_start}")
+print(f"Time taken for minhashing: {time.time()-start_time}")
 
 # step 3: LSH(Locality sensitive hashing)
 start_time = time.time()    # start timer
-buckets_list = lsh.lsh(signature_matrix, 1)
-print(buckets_list)
-print(f"Time taken for lsh: {time.time()-timer_start}")
+buckets_list = lsh.get_bucket_list(signature_matrix, 1)
+print(f"Time taken for lsh: {time.time()-start_time}")
+
+# preprocessing done. ask file from user to check plagiarism
+while True:
+    test_file = input("Enter path of file: ")
+    if test_file == "EXIT":
+        break;
+    # if not os.path.exists(test_file):
+    #     print(">> The given path does not exist.")
+    #     continue
+    lsh.find_similar_docs(test_file, None, buckets_list, signature_matrix, 1)
 
 print("\n*** End of Program ***\n")

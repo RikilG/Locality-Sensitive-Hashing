@@ -71,7 +71,7 @@ def generate_signature_matrix(incidence_matrix, no_of_hash_functions=200):
         dataframe containing signatures of each document
     """
 
-    # is pickle file exists, load and return it
+    # if pickle file exists, load and return it
     if os.path.exists("sig_mat.pickle"):
         signature_matrix = read_pickle("sig_mat.pickle")
         print("Using already created sig_mat.pickle file")

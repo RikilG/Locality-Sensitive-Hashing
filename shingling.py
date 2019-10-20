@@ -11,6 +11,8 @@ import multiprocessing as mp
 import numpy as np
 import codecs
 import os
+import pickle
+from tqdm import tqdm
 
 
 def list_files(folderpath, extension=".txt"):
@@ -28,6 +30,11 @@ def list_files(folderpath, extension=".txt"):
     -------
     list
         a list of files present in the directory(includes sub-folders)
+    
+    Raises
+    ------
+    Exception
+        if given folder path does not exist
     """
 
     print(f"Reading corpus: {folderpath}")
@@ -61,6 +68,7 @@ def parallel_file_read(t_id, file_list, k, output, newline=False):
         with codecs.open(file_tuple[0], 'r', encoding="utf8", errors='ignore') as doc:
             # print(f"reading: {file_tuple[0]}")
             data = doc.read()
+            data = data.lower()
             data = ' '.join(data.split())   # substiture multiples spaces with single space
             data = data.replace('\r\n', ' ') # replace windows line endings with space
             data = data.replace('\r', '')   # remove \r in windows
@@ -114,29 +122,31 @@ def build_matrix(files, k=4, newline=False, parallel=True, pool=3):
     """helper-function: build incidence matrix for k-grams (shingles)
     """
 
-    df = DataFrame()
+    df = DataFrame(columns=[x[1] for x in files])
 
     if parallel is True:
         return parallel_adapter(files, k, df, newline, pool)
 
-    for f in files:
+    for f in tqdm(files):
         with codecs.open(f[0], 'r', encoding="utf8", errors='ignore') as doc:
-            print("reading: "+f[0])
+            # print("reading: "+f[0])
             data = doc.read()
-            df[ f[1] ] = 0
-            
+            # df[ f[1] ] = 0
+            data = data.lower()             # lowercase all letters
             data = ' '.join(data.split())   # substiture multiples spaces with single space
             data = data.replace('\r\n', ' ') # replace windows line endings with space
             data = data.replace('\r', '')   # remove \r in windows
             data = data.replace('\t', '')   # remove tab-spaces
             if newline is False:
                 data = data.replace('\n',' ')
+
+            # st_time = time.time()
             for i in range(0, len(data)-k+1):
                 shingle = data[i:i+k]
-                if shingle not in df.index:
+                if (shingle in df.index) == False:
                     df.loc[shingle] = [0 for i in range(df.shape[1])]
-                    # df = df.append(DataFrame(data={shingle: [0 for i in range(df.shape[1])]}, columns=df.columns))
-                df.loc[ shingle, f[1] ] = 1
+                df.at[ shingle, f[1] ] = 1
+            # print(time.time()-st_time)
     
     return df
 
@@ -167,10 +177,17 @@ def get_shingle_matrix(folderpath, shingle_size=8, extension=".txt", parallel=0)
     """
 
     # if pickle file exists, then load and return it instead 
+    incidence_matrix = None
     if os.path.exists(f"{folderpath}_inc_mat.pickle"):
-        print(f"Using already created {folderpath}_inc_mat.pickle file")
         incidence_matrix = read_pickle(f"{folderpath}_inc_mat.pickle")
         return incidence_matrix
+        if os.path.exists("file_list.pickle"):
+            print(f"Using already created {folderpath}_inc_mat.pickle file")
+            print("using pickled file list")
+            with open("file_list.pickle", 'rb') as file_list_pkl:
+                files = pickle.load(file_list_pkl)
+            return incidence_matrix, files
+        print("file list not found")
 
     # fetch the list of files to be read
     files = list_files(folderpath, extension)
@@ -182,8 +199,10 @@ def get_shingle_matrix(folderpath, shingle_size=8, extension=".txt", parallel=0)
 
     print("saving generated incidence index to file...")
     incidence_matrix.to_pickle(f"{folderpath}_inc_mat.pickle")
+    with open("file_list.pickle", 'wb') as file_list_pkl:
+        pickle.dump(files, file_list_pkl)
     print(f"saved to {folderpath}_inc_mat.pickle")
-    return incidence_matrix
+    return incidence_matrix, files
 
 
 def main():
