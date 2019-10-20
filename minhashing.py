@@ -5,14 +5,14 @@ This module calculates the signature of each document using minhashing
 technique by utilizing a number of hash functions
 
 This module contatins following functions:
-    * generate_signature_matrix - to generate signature matrix from incidence 
-        matrix
+    * generate_signature_matrix - to generate signature matrix from incidence matrix
 """
 
 from random import randint
 from pandas import DataFrame, read_pickle
 import numpy as np
 import os
+from tqdm import tqdm
 
 
 def generate_hash_functions(rows, no_of_hash_functions=200):
@@ -45,7 +45,7 @@ def generate_hash_functions(rows, no_of_hash_functions=200):
                 c: prime integer just greater than rows
                 a,b: random integer less than c
             """
-            return (randint(3,c-1)*x + randint(3,c-1))%c
+            return (randint(1,5*c)*x + randint(1,5*c))%c
         hashes.append(hash)
 
     return hashes
@@ -82,7 +82,7 @@ def generate_signature_matrix(incidence_matrix, no_of_hash_functions=200):
     signature_matrix = DataFrame(index=[i for i in range(no_of_hash_functions)], columns=incidence_matrix.columns)
     
     # core minhashing algorithm
-    for i in range(rows):
+    for i in tqdm(range(rows)):
         for j in incidence_matrix.columns:
             if incidence_matrix.iloc[i][j]==1:
                 for k in range(no_of_hash_functions):

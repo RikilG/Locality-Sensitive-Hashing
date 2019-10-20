@@ -1,3 +1,6 @@
+"""
+Hash similar documents to same buckets to identify similar documents
+"""
 def band_hashing(band, hash_f, buckets_dict):
     """helper-function: To Perform hash on bands
 

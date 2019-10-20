@@ -40,7 +40,7 @@ def list_files(folderpath, extension=".txt"):
     print(f"Reading corpus: {folderpath}")
     # check if folder path exists
     if(not os.path.exists(folderpath)):
-        raise Exception(f"Given folder path: {folderpath} does not exist")
+        raise Exception(f"Given folder path: '{folderpath}' does not exist")
         return
     
     doc_files = []
@@ -180,7 +180,6 @@ def get_shingle_matrix(folderpath, shingle_size=8, extension=".txt", parallel=0)
     incidence_matrix = None
     if os.path.exists(f"{folderpath}_inc_mat.pickle"):
         incidence_matrix = read_pickle(f"{folderpath}_inc_mat.pickle")
-        return incidence_matrix
         if os.path.exists("file_list.pickle"):
             print(f"Using already created {folderpath}_inc_mat.pickle file")
             print("using pickled file list")
