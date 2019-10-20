@@ -14,6 +14,7 @@ Welcome to Locality Sensitive Hashing's documentation!
    main
    minhashing
    shingling
+   statistics
 
 Indices and tables
 ==================
