@@ -12,8 +12,18 @@ cd Locality-Sensitive-Hashing
 python main.py
 ```
 
+## Dataset
+To use a different dataset, replace the current dataset present in the 
+corpus folder. Currently only text files are supported
+
 ## Dependencies
-following python modules are required:
+Following python modules are required:
 - pandas
 - numpy
 - pickle
+
+## Team Members
+- Rohith Saranga
+- Kasuba Badri Vishal
+- Rikil Gajarla
+- JSNS Rahul

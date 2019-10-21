@@ -20,9 +20,9 @@ def jaccard(x, a, signature_matrix):
     int
         jaccard similarity between documents x and a
     """
-    x = set(signature_matrix[x])
-    a = set(signature_matrix[a])
-    return len(x & a)/len(x | a)
+    x = signature_matrix[x]
+    a = signature_matrix[a]
+    return sum(x & a)/sum(x | a)
 
 
 def euclid(x, a, signature_matrix):
@@ -146,9 +146,10 @@ def recall(threshold, x, size, output, signature_matrix, sim_type):
         recall value for the given set of retrieved items.
     """
     docs = compute_similarity(x, [ i for i in range(size) ], signature_matrix, sim_type)
-    print(docs)
     req = [ i for f, i in output if i>=threshold ]
     den = [ i for f, i in docs if i>=threshold and f!=x ]
+    if len(den) == 0:
+        return "not defined"
     return len(req)/len(den)
 
 

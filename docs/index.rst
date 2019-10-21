@@ -10,11 +10,7 @@ Welcome to Locality Sensitive Hashing's documentation!
    :maxdepth: 4
    :caption: Contents:
 
-   lsh
-   main
-   minhashing
-   shingling
-   statistics
+   modules
 
 Indices and tables
 ==================

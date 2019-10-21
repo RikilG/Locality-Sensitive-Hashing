@@ -58,13 +58,13 @@ def startLSH():
         #     continue
         print(f"Given file: {statistics.get_file_name(test_file, files)}")
         similar_docs = lsh.find_similar_docs(test_file, buckets_list, signature_matrix, r)
-        output = statistics.compute_similarity(test_file, similar_docs, signature_matrix, sim_type)
+        output = statistics.compute_similarity(test_file, similar_docs, shingle_matrix, sim_type)
 
         for file_id, score in output:
             print(f"{statistics.get_file_name(file_id, files)}\t{score}")
         
         print(f"Precision: {statistics.precision(threshold, output)}")
-        print(f"Recall: {statistics.recall(threshold, test_file, len(files), output, signature_matrix, sim_type)}")
+        print(f"Recall: {statistics.recall(threshold, test_file, len(files), output, shingle_matrix, sim_type)}")
 
     print("\n*** End of Program ***\n")
 
