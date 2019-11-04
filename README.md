@@ -4,7 +4,7 @@ A python implementation of localitiy sensitive hashing(lsh).
 
 To run, clone repo first using:
 ```sh
-git clone https://github.com/rohith203/Locality-Sensitive-Hashing.git
+git clone https://github.com/RikilG/Locality-Sensitive-Hashing.git
 ```
 then run using python
 ```sh

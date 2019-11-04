@@ -84,12 +84,12 @@ def generate_signature_matrix(incidence_matrix, no_of_hash_functions=200):
     # core minhashing algorithm
     for i in tqdm(range(rows)):
         for j in incidence_matrix.columns:
-            if incidence_matrix.iloc[i][j]==1:
+            if incidence_matrix.iat[i][j]==1:
                 for k in range(no_of_hash_functions):
-                    if np.isnan(signature_matrix.iloc[k][j]):
-                        signature_matrix.iloc[k][j] = hashes[k](i)
+                    if np.isnan(signature_matrix.iat[k][j]):
+                        signature_matrix.iat[k][j] = hashes[k](i)
                     else:
-                        signature_matrix.iloc[k][j] = min(signature_matrix.iloc[k][j], hashes[k](i))
+                        signature_matrix.iat[k][j] = min(signature_matrix.iat[k][j], hashes[k](i))
     
     print("saving generated signature_matrix to pickle file...")
     signature_matrix.to_pickle("sig_mat.pickle")

@@ -49,13 +49,18 @@ def startLSH():
     # preprocessing done. ask file from user to check plagiarism
     sim_type = "jaccard"
     while True:
-        test_file = int(input("Enter path of file: "))
-        threshold = float(input("Enter threshold: "))
+        test_file = input("Enter path of file: ")
         if test_file == "EXIT":
             break;
-        # if not os.path.exists(test_file):
-        #     print(">> The given path does not exist.")
-        #     continue
+        if not os.path.exists(test_file):
+            print(">> The given path does not exist.")
+            continue
+        for name, num in files:
+            if test_file == name:
+                test_file = int(num)
+        # test_file = int(input("Enter path of file: "))
+        threshold = float(input("Enter threshold: "))
+
         print(f"Given file: {statistics.get_file_name(test_file, files)}")
         similar_docs = lsh.find_similar_docs(test_file, buckets_list, signature_matrix, r)
         output = statistics.compute_similarity(test_file, similar_docs, shingle_matrix, sim_type)
